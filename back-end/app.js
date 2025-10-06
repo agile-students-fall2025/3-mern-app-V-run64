@@ -4,13 +4,17 @@ const morgan = require('morgan') // middleware for nice logging of incoming HTTP
 const cors = require('cors') // middleware for enabling CORS (Cross-Origin Resource Sharing) requests.
 const mongoose = require('mongoose')
 
+
 const app = express() // instantiate an Express object
 app.use(morgan('dev', { skip: (req, res) => process.env.NODE_ENV === 'test' })) // log all incoming requests, except when in unit test mode.  morgan has a few logging default styles - dev is a nice concise color-coded style
 app.use(cors()) // allow cross-origin resource sharing
 
+
 // use express's builtin body-parser middleware to parse any data included in a request
 app.use(express.json()) // decode JSON-formatted incoming POST data
 app.use(express.urlencoded({ extended: true })) // decode url-encoded incoming POST data
+
+app.use(express.static('public'));
 
 // connect to database
 mongoose
@@ -21,6 +25,7 @@ mongoose
 // load the dataabase models we want to deal with
 const { Message } = require('./models/Message')
 const { User } = require('./models/User')
+
 
 // a route to handle fetching all messages
 app.get('/messages', async (req, res) => {
@@ -77,6 +82,22 @@ app.post('/messages/save', async (req, res) => {
     })
   }
 })
+
+
+
+app.get('/api/about', async (req, res) => {
+  res.json({
+    name: "Varun Pandian",
+    description: [
+      "Hi, I’m Varun Pandian — a Computer Science student at NYU Tandon School of Engineering. I’m passionate about building interactive and efficient systems that combine creativity and technical problem-solving." ,
+      "I’ve developed projects in areas like game development, backend engineering, and full-stack web applications using technologies such as React, Node.js, Flask, and C++.",
+      "Beyond academics, I enjoy exploring how technology powers the systems we use every day, from algorithms to hardware. In my free time, I work on small indie game projects, experiment with procedural generation, and continuously seek ways to improve my design and programming skills."
+    ],
+    imageUrl:"/about_photo.png"
+
+  });
+});
+
 
 // export the express app we created to make it available to other modules
 module.exports = app // CommonJS export style!
